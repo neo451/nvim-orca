@@ -1,0 +1,51 @@
+local ops = {}
+-- ops["*"] = 
+-- ops["#"] =
+-- ops["$"] =
+-- ops["?"] =
+-- ops["/"] =
+-- ops["\\"] =
+-- ops["|"] = 
+-- ops["-"] =
+-- ops[":"] = 
+-- ops["%"] = 
+-- ops["!"] = 
+-- ops["&"] = 
+-- ops["^"] = 
+-- ops["~"] = 
+-- ops["]"] = 
+-- ops["}"] =
+-- ops["`"] = 
+-- ops["<"] = 
+-- ops[">"] = 
+-- ops['('] = 
+-- ops["="] = 
+ops.A = require("a")
+ops.B = require("b")
+ops.C = require("c")
+ops.D = require("d")
+ops.E = require("e")
+ops.F = require("f")
+ops.G = require("g")
+ops.H = require("h")
+ops.I = require("i")
+ops.J = require("j")
+ops.K = require("k")
+ops.L = require("l")
+ops.M = require("m")
+ops.N = require("n")
+ops.O = require("o")
+ops.P = require("p")
+ops.Q = require("q")
+ops.R = require("r")
+ops.S = require("s")
+ops.T = require("t")
+ops.U = require("u")
+ops.V = require("v")
+ops.W = require("w")
+ops.X = require("x")
+ops.Y = require("y")
+ops.Z = require("z")
+
+
+return ops
