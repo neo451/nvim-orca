@@ -244,7 +244,6 @@ function orca:operate()
 			end
 		end
 	end
-	P(self.cell)
 	pt = {}
 	self.frame = self.frame + 1
 end
@@ -263,73 +262,42 @@ function orca:init_field()
 	self.info = {}
 end
 
--- function orca:reload()
--- 	self:clear()
---
--- 	redraw_metro = metro.init(function(stage)
--- 		redraw()
--- 	end, 1 / 60)
--- 	redraw_metro:start()
---
--- 	clock.transport.start()
--- end
-
 function orca:draw_board()
 	for y = 1, self.h do
-		local tab = table.concat(self.cell[y], " ")
-		vim.api.nvim_buf_set_lines(0, y - 1, y - 1, false, { tab })
+		local tab = table.concat(self.cell[y])
+		-- vim.api.nvim_buf_set_lines(0, y - 1, y - 1, true, { tab })
+		vim.api.nvim_buf_set_text(0, y - 1, 0, y - 1, -1, { tab })
 	end
 end
 
--- function orca:insert(x, y, g)
--- 	self.cell[y][x] = g
--- end
-
-local clock = require("clock")
-
-function update()
-  while true do
-    clock.sync(1 / 4) -- fires every quarter note
-    orca:operate()
-  end
+function orca:insert(x, y, g)
+	self.cell[y][x] = g
 end
 
-function clock.transport.start()
-	-- prevents CLOCK > RESET from creating a new clock.
-	if running then
-		return
+local function update_table()
+	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+	for y, v in pairs(lines) do
+		for x = 1, #v do
+			orca:insert(x, y, string.sub(v, x, x))
+		end
 	end
-
-	print("Start Clock")
-	update_id = clock.run(update)
-	running = true
 end
 
-function clock.transport.stop()
-	print("Stop Clock")
-	clock.cancel(update_id)
-	running = false
+local function animate_interface()
+	update_table()
+	orca:operate()
+	orca:draw_board()
 end
 
-function init()
-  orca:reload()
-  update_id = clock.run(update)
+M.animate_interface = function()
+	vim.loop.new_timer():start(
+		0,
+		1000,
+		vim.schedule_wrap(function()
+			animate_interface()
+		end)
+	)
 end
-
--- function M.update()
--- 	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
--- 	for y, v in pairs(lines) do
--- 		for x = 1, #v do
--- 			orca:insert(x, y, string.sub(v, x, x))
--- 		end
--- 	end
--- 	P(orca.cell)
--- end
-
--- vim.api.nvim_create_autocmd({ "TextChanged" }, {
---   pattern = "*.txt",
--- 	callback = update(),
--- })
 
 M.draw = function()
 	orca:init_field()
