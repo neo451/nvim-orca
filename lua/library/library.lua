@@ -1,6 +1,6 @@
 local ops = {}
--- ops["*"] = 
--- ops["#"] =
+ops["*"] = require("_bang")
+ops["#"] = require("_comment")
 -- ops["$"] =
 -- ops["?"] =
 -- ops["/"] =

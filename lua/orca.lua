@@ -1,48 +1,32 @@
--- TODO: write to a buffer (txt file)
 -- TODO: make a float window
--- TODO: how to read all states into a table?
 -- TODO: read the monome code
--- TODO: port all function into here
+-- TODO: Read a existing file properly
+-- TODO: Set bpm with
+-- TODO: Make a proper clock imitating the original
 package.path = package.path .. ";" .. string.gsub(debug.getinfo(1).source, "^@(.+/)[^/]+$", "%1") .. "library/?.lua"
 local M = {}
 local library = require("library")
 local euclid = require("er")
 local music = require("musicutil")
 local keycodes = require("keycodes")
--- local metro = require("metro")
--- local clock = require("clock")
-local update_id
-local running = true
-local w = 9
-local h = 9
+local util = require("norns_utils")
+
+local w = 20
+local h = 20
 local pt = {}
 local hood = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }
 
 local orca = {
 	w = w,
 	h = h,
-	cell = {
-		{ "1", "A", "2", ".", "R", ".", ".", ".", "." },
-		{ ".", ".", ".", ".", ".", ".", ".", ".", "." },
-		{ ".", ".", ".", ".", ".", ".", ".", ".", "." },
-		{ ".", ".", ".", "E", ".", ".", ".", ".", "." },
-		{ ".", ".", ".", ".", ".", ".", ".", ".", "." },
-		{ ".", ".", ".", ".", ".", ".", ".", ".", "." },
-		{ ".", ".", ".", ".", ".", ".", ".", ".", "." },
-		{ ".", ".", ".", ".", ".", ".", ".", ".", "." },
-		{ ".", ".", ".", ".", ".", ".", ".", ".", "." },
-	},
+	cell = {},
 	locks = {},
 	info = {},
 	frame = 0,
+	vars = {},
 	chars = keycodes.chars,
 	notes = { "C", "c", "D", "d", "E", "F", "f", "G", "g", "A", "a", "B" },
 }
-
--- HACK: WTF IS THIS?
-function orca.normalize(n)
-	return n == "e" and "F" or n == "b" and "C" or n
-end
 
 -- TODO:
 function orca:transpose(n, o)
@@ -132,15 +116,6 @@ function orca:locked(x, y)
 	return p and p[1] or false
 end
 
--- HACK: NO NEED FOR NOW MAYBE???
--- function orca:erase(x,y)
---   local at = self:index(x,y)
---   self:unlock(x,y)
---   if self.cell[y][x] == "/" then
---     self.cell[y][x] = "."
---   end
--- end
-
 function orca:index_at(x, y)
 	return x + (self.w * y)
 end
@@ -150,7 +125,6 @@ function orca:op(x, y)
 	return (library[self.up(c)] ~= nil) and true
 end
 
--- HACK: last func to call for each op
 function orca:write(x, y, g)
 	if not self:inbounds(self.x + x, self.y + y) then
 		return false
@@ -201,7 +175,6 @@ function orca:shift(s, e)
 		table.remove(self.cell[self.y], self.x + s)
 		table.insert(self.cell[self.y], self.x + e, data)
 	end
-	print(vim.inspect(self.cell))
 end
 
 function orca:move(x, y)
@@ -240,15 +213,13 @@ function orca:operate()
 		if not self:locked(x, y) then
 			local op = self.up(g)
 			if op == g or self:neighbor(x, y, "*") then
-				library[op](self, x, y) -- run the operater!
+				library[op](self, x, y)
 			end
 		end
 	end
 	pt = {}
 	self.frame = self.frame + 1
 end
-
-orca:operate()
 
 function orca:init_field()
 	for y = 1, self.h do
@@ -265,7 +236,6 @@ end
 function orca:draw_board()
 	for y = 1, self.h do
 		local tab = table.concat(self.cell[y])
-		-- vim.api.nvim_buf_set_lines(0, y - 1, y - 1, true, { tab })
 		vim.api.nvim_buf_set_text(0, y - 1, 0, y - 1, -1, { tab })
 	end
 end
@@ -300,6 +270,7 @@ M.animate_interface = function()
 end
 
 M.draw = function()
+	-- update_table()
 	orca:init_field()
 	orca:draw_board()
 end
