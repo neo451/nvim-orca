@@ -4,14 +4,16 @@
 -- TODO: Set bpm with
 -- TODO: Make a proper clock imitating the original
 package.path = package.path .. ";" .. string.gsub(debug.getinfo(1).source, "^@(.+/)[^/]+$", "%1") .. "library/?.lua"
+
 local M = {}
 local library = require("library")
 local euclid = require("er")
 local music = require("musicutil")
 local keycodes = require("keycodes")
 local util = require("norns_utils")
+local tab = require("tabutil")
 
-local w = 20
+local w = 50
 local h = 20
 local pt = {}
 local hood = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } }
@@ -245,10 +247,13 @@ function orca:insert(x, y, g)
 end
 
 local function update_table()
-	local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-	for y, v in pairs(lines) do
-		for x = 1, #v do
-			orca:insert(x, y, string.sub(v, x, x))
+	local lines = vim.api.nvim_buf_get_lines(0, 0, h, false)
+	if #orca.cell == 0 then
+		orca:init_field()
+	end
+	for y, line in pairs(lines) do
+		for x = 1, #line do
+			orca:insert(x, y, string.sub(line, x, x))
 		end
 	end
 end
@@ -259,8 +264,10 @@ local function animate_interface()
 	orca:draw_board()
 end
 
-M.animate_interface = function()
-	vim.loop.new_timer():start(
+local clock = vim.uv.new_timer()
+
+M.start = function()
+	clock:start(
 		0,
 		1000,
 		vim.schedule_wrap(function()
@@ -269,10 +276,8 @@ M.animate_interface = function()
 	)
 end
 
-M.draw = function()
-	-- update_table()
-	orca:init_field()
-	orca:draw_board()
+M.stop = function()
+	clock:stop()
 end
 
 return M

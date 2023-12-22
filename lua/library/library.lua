@@ -5,21 +5,21 @@ ops["#"] = require("_comment")
 -- ops["?"] =
 -- ops["/"] =
 -- ops["\\"] =
--- ops["|"] = 
+-- ops["|"] =
 -- ops["-"] =
--- ops[":"] = 
--- ops["%"] = 
--- ops["!"] = 
--- ops["&"] = 
--- ops["^"] = 
--- ops["~"] = 
--- ops["]"] = 
+-- ops[":"] =
+-- ops["%"] =
+-- ops["!"] =
+-- ops["&"] =
+-- ops["^"] =
+-- ops["~"] =
+-- ops["]"] =
 -- ops["}"] =
--- ops["`"] = 
--- ops["<"] = 
--- ops[">"] = 
--- ops['('] = 
--- ops["="] = 
+-- ops["`"] =
+-- ops["<"] =
+-- ops[">"] =
+-- ops['('] =
+ops["="] = require("_osc_out")
 ops.A = require("a")
 ops.B = require("b")
 ops.C = require("c")
@@ -46,6 +46,5 @@ ops.W = require("w")
 ops.X = require("x")
 ops.Y = require("y")
 ops.Z = require("z")
-
 
 return ops
