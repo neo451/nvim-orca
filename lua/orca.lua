@@ -12,6 +12,7 @@ local music = require("musicutil")
 local keycodes = require("keycodes")
 local util = require("norns_utils")
 local tab = require("tabutil")
+local clock = require("clock")
 
 local w = 50
 local h = 20
@@ -28,6 +29,7 @@ local orca = {
 	vars = {},
 	chars = keycodes.chars,
 	notes = { "C", "c", "D", "d", "E", "F", "f", "G", "g", "A", "a", "B" },
+	clock = clock:new(120),
 }
 
 -- TODO:
@@ -264,20 +266,14 @@ local function animate_interface()
 	orca:draw_board()
 end
 
-local clock = vim.uv.new_timer()
+-- local clock = vim.uv.new_timer()
 
 M.start = function()
-	clock:start(
-		0,
-		1000,
-		vim.schedule_wrap(function()
-			animate_interface()
-		end)
-	)
+	orca.clock:start(animate_interface)
 end
 
 M.stop = function()
-	clock:stop()
+	orca.clock:stop()
 end
 
 return M
